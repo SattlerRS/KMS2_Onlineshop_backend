@@ -19,5 +19,14 @@ module.exports = function(app) {
     controller.signup
   );
 
+  app.post(
+    "/api/auth/signup_as_seller",
+    [
+      verifySignUp.checkDuplicateUsernameOrEmail,
+      verifySignUp.checkRolesExisted
+    ],
+    controller.signup_as_seller
+  );
+
   app.post("/api/auth/signin", controller.signin);
 };

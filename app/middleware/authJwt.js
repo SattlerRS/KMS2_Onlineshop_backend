@@ -5,8 +5,7 @@ const User = db.user;
 
 verifyToken = (req, res, next) => {
   let token = req.headers["x-access-token"];
-
-  if (!token) {
+  if (!token) {   
     return res.status(403).send({
       message: "No token provided!"
     });
@@ -16,6 +15,7 @@ verifyToken = (req, res, next) => {
             config.secret,
             (err, decoded) => {
               if (err) {
+                console-log("Fehler!!!!!!!!!")
                 return res.status(401).send({
                   message: "Unauthorized!",
                 });
@@ -23,6 +23,24 @@ verifyToken = (req, res, next) => {
               req.userId = decoded.id;
               next();
             });
+};
+
+isUser = (req, res, next) => {
+  User.findByPk(req.userId).then(user => {
+    user.getRoles().then(roles => {
+      for (let i = 0; i < roles.length; i++) {
+        if (roles[i].name === "user") {
+          next();
+          return;
+        }
+      }
+
+      res.status(403).send({
+        message: "Require User Role!"
+      });
+      return;
+    });
+  });
 };
 
 isAdmin = (req, res, next) => {
@@ -43,28 +61,28 @@ isAdmin = (req, res, next) => {
   });
 };
 
-isModerator = (req, res, next) => {
+isSeller = (req, res, next) => {
   User.findByPk(req.userId).then(user => {
     user.getRoles().then(roles => {
       for (let i = 0; i < roles.length; i++) {
-        if (roles[i].name === "moderator") {
+        if (roles[i].name === "seller") {
           next();
           return;
         }
       }
 
       res.status(403).send({
-        message: "Require Moderator Role!"
+        message: "Require Seller Role!"
       });
     });
   });
 };
 
-isModeratorOrAdmin = (req, res, next) => {
+isSellerOrAdmin = (req, res, next) => {
   User.findByPk(req.userId).then(user => {
     user.getRoles().then(roles => {
       for (let i = 0; i < roles.length; i++) {
-        if (roles[i].name === "moderator") {
+        if (roles[i].name === "seller") {
           next();
           return;
         }
@@ -76,7 +94,7 @@ isModeratorOrAdmin = (req, res, next) => {
       }
 
       res.status(403).send({
-        message: "Require Moderator or Admin Role!"
+        message: "Require Seller or Admin Role!"
       });
     });
   });
@@ -85,7 +103,8 @@ isModeratorOrAdmin = (req, res, next) => {
 const authJwt = {
   verifyToken: verifyToken,
   isAdmin: isAdmin,
-  isModerator: isModerator,
-  isModeratorOrAdmin: isModeratorOrAdmin
+  isSeller: isSeller,
+  isSellerOrAdmin: isSellerOrAdmin,
+  isUser: isUser
 };
 module.exports = authJwt;
