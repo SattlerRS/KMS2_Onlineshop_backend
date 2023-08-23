@@ -1,7 +1,6 @@
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require('body-parser');
-
 const app = express();
 
 var corsOptions = {
@@ -21,13 +20,11 @@ app.use(express.json());
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }));
 
-// database
+// Datenbank mit Sequelize
 const db = require("./app/models");
-const Role = db.role;
-
 db.sequelize.sync();
 
-// routes
+// Routen
 require('./app/routes/auth.routes')(app);
 require('./app/routes/user.routes')(app);
 require('./app/routes/product.routes')(app);
@@ -38,8 +35,9 @@ require('./app/routes/checkout.routes')(app);
 require('./app/routes/orders.routes')(app);
 require('./app/routes/rating.routes')(app);
 require('./app/routes/watchlist.routes')(app);
+require('./app/routes/newsletter.routes')(app);
 
-// set port, listen for requests
+// Port setzen und Server starten
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);

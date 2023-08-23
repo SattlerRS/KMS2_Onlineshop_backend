@@ -9,7 +9,7 @@ exports.getOrdersForUser = (req, res) => {
     where: { userid: userId },
   })
     .then(orders => {
-      const orderIds = orders.map(order => order.id); // IDs der gefundenen Bestellungen
+      const orderIds = orders.map(order => order.id);
 
       Orderdetail.findAll({
         where: { orderid: orderIds },
@@ -19,14 +19,14 @@ exports.getOrdersForUser = (req, res) => {
         })
         .catch(err => {
           res.status(500).json({
-            message: "Beim Abrufen der Bestelldetails ist ein Fehler aufgetreten.",
+            message: "There was an error retrieving the order details",
             error: err.message
           });
         });
     })
     .catch(err => {
       res.status(500).json({
-        message: "Beim Abrufen der Bestellungen ist ein Fehler aufgetreten.",
+        message: "There was an error retrieving the order details",
         error: err.message
       });
     });
@@ -43,7 +43,7 @@ exports.getOrdersForSeller = (req, res) => {
     })    
     .catch(err => {
       res.status(500).json({
-        message: "Beim Abrufen der Bestellungen ist ein Fehler aufgetreten.",
+        message: "There was an error retrieving the order details",
         error: err.message
       });
     });
@@ -53,18 +53,19 @@ exports.getOrdersForSeller = (req, res) => {
 exports.changeOrderDetailStatus = (req, res) => {
   const { Id, status } = req.body;
 
+  // Staus ändern mit der jeweiligen id
   Orderdetail.update({ status }, {
     where: { id: Id }
   })
-    .then(numAffectedRows => {
-      if (numAffectedRows[0] === 1) {
-        res.status(200).json({ message: 'Bestelldaten erfolgreich geändert' });
-      } else {
-        res.status(404).json({ message: 'Bestelldaten nicht gefunden' });
-      }
-    })
-    .catch(err => {
-      console.error(err);
-      res.status(500).json({ message: 'Interner Serverfehler' });
-    });
+    //Wenn ein Status geändert wurde --> success
+  .then(numAffectedRows => {
+    if (numAffectedRows[0] === 1) {
+      res.status(200).json({ message: 'Order details successfully changed' });
+    } else {
+      res.status(404).json({ message: 'Order data not found' });
+    }
+  })
+  .catch(err => {
+    res.status(500).json({ message: 'Internal Server Error' });
+  });
 }

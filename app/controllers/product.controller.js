@@ -3,9 +3,6 @@ const Product = db.product;
 const Card = db.card;
 const Watchlist = db.watchlist;
 const Sellerdetails = db.sellerdetails;
-const fs = require('fs');
-const path = require('path');
-
 
 
 // Produkt hinzufügen
@@ -58,12 +55,11 @@ exports.getProducts = (req, res) => {
     order: [['createdAt', 'DESC']]
   })
     .then(products => {
-      console.log('Produkte erfolgreich abgerufen');
       
-      // Array to store the final result with seller details
+      // Array zum Speichern des Endergebnisses mit Verkäuferdetails
       const productsWithDetails = [];
 
-      // Function to fetch seller details for a given product
+      // Funktion zum Abrufen von Verkäuferdetails für ein bestimmtes Produkt
       const fetchSellerDetails = async (product) => {
         const seller = await Sellerdetails.findOne({
           where: {
@@ -82,10 +78,9 @@ exports.getProducts = (req, res) => {
         }
       };
 
-      // Array of promises for fetching seller details for each product
       const promises = products.map(product => fetchSellerDetails(product));
 
-      // Wait for all promises to resolve
+      // Wartet auf alle promises
       Promise.all(promises)
         .then(() => {
         // Sortiere die productsWithDetails nach createdAt in absteigender Reihenfolge
@@ -99,14 +94,12 @@ exports.getProducts = (req, res) => {
         res.status(200).json(responseData);
       })
       .catch(err => {
-        console.error('Fehler beim Abrufen der Sellerdetails:', err);
-        const jsonResponse = { error: 'Fehler beim Abrufen der Sellerdetails' };
+        const jsonResponse = { error: 'Error retrieving seller details' };
         res.status(500).json(jsonResponse);
       });
     })
     .catch(err => {
-      console.error('Fehler beim Abrufen der Produkte:', err);
-      const jsonResponse = { error: 'Fehler beim Abrufen der Produkte' };
+      const jsonResponse = { error: 'Error getting the products' };
       res.status(500).json(jsonResponse);
     });
 };
@@ -116,14 +109,12 @@ exports.getProductsForSeller = async (req, res) => {
   const sellerId = req.params.sellerId;
 
   try {
-    // Hier ist ein Beispiel für die Verwendung von Sequelize, um die Produkte für den Verkäufer abzurufen
     const products = await Product.findAll({
       where: {
         sellerid: sellerId
       },
       order: [['createdAt', 'DESC']]
     });
-
     res.json({ products: products });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -148,28 +139,23 @@ exports.delete = (req, res) => {
       })
       .then(deletedProductCount => {
         if (deletedProductCount === 0) {
-          return res.status(404).json({ error: 'Produkt nicht gefunden' });
+          return res.status(404).json({ error: 'Product not found' });
         }
 
-        console.log('Produkt erfolgreich gelöscht:', deletedProductCount);
-        res.status(200).json({ message: 'Produkt, Cards und Watchlist erfolgreich gelöscht' });
+        res.status(200).json({ message: 'Product, cards and watchlist successfully deleted' });
       })
       .catch(error => {
-        console.error('Fehler beim Löschen des Produkts:', error);
-        res.status(500).json({ error: 'Fehler beim Löschen des Produkts' });
+        res.status(500).json({ error: 'Error deleting product' });
       });
     })
     .catch(error => {
-      console.error('Fehler beim Löschen der Watchlist:', error);
-      res.status(500).json({ error: 'Fehler beim Löschen der Watchlist' });
+      res.status(500).json({ error: 'Error deleting watchlist' });
     });
   })
   .catch(error => {
-    console.error('Fehler beim Löschen der Cards:', error);
-    res.status(500).json({ error: 'Fehler beim Löschen der Cards' });
+    res.status(500).json({ error: 'Error deleting cards' });
   });
 };
-
 
 // Produkt ändern
 exports.change = (req, res) => {
@@ -193,8 +179,6 @@ exports.change = (req, res) => {
   }
       formData.images.push(...imageUrls);
   
-  console.log(formData.images)
-  
   const newProduct = {
     productname: formData.productname,
     productdescription: formData.productdescription,
@@ -210,14 +194,14 @@ exports.change = (req, res) => {
   })
     .then(numAffectedRows => {
       if (numAffectedRows[0] === 1) {
-        res.status(200).json({ message: 'Produktdaten erfolgreich geändert' });
+        res.status(200).json({ message: 'Product data successfully changed' });
       } else {
-        res.status(404).json({ message: 'Produkt nicht gefunden' });
+        res.status(404).json({ message: 'Product not found' });
       }
     })
     .catch(err => {
       console.error(err);
-      res.status(500).json({ message: 'Interner Serverfehler' });
+      res.status(500).json({ message: 'Internal Server Error' });
     });
 }
 
@@ -225,7 +209,6 @@ exports.change = (req, res) => {
 exports.getProduct = (req, res) => { 
   const productId = req.params.productId;
 
-  console.log(productId);
   Product.findOne({
     where: { id: productId },
   })
@@ -248,28 +231,32 @@ exports.getProduct = (req, res) => {
           res.status(200).json(productWithSellerDetails);
         } else {
           // Verkäufer nicht gefunden
-          res.status(404).json({ message: "Verkäufer nicht gefunden" });
+          res.status(404).json({ message: "Seller not found" });
         }
       })
       .catch((error) => {
         // Fehler beim Abrufen der Verkäuferdetails
-        res.status(500).json({ message: "Interner Serverfehler" });
+        res.status(500).json({ message: "Internal Server Error" });
       });
     } else {
       // Produkt nicht gefunden
-      res.status(404).json({ message: "Produkt nicht gefunden" });
+      res.status(404).json({ message: "Product not found" });
     }
   })
   .catch((error) => {
     // Fehler beim Abrufen des Produkts
-    res.status(500).json({ message: "Interner Serverfehler" });
+    res.status(500).json({ message: "Internal Server Error" });
   });
 }
 
- 
-// Ungeprüfte Produkte abrufen
-exports.getAllUnproofed = (req, res) => {
-  Product.findAll({
+// Ungeprüfte oder ungeprüfte Produkte abrufen
+exports.getPorductsForAdmin = (req, res) => {
+  
+  const proofedValue = req.params.proofed;
+  console.log(proofedValue);
+
+  if (proofedValue == 0) {
+    Product.findAll({
     where: {
       proofed: 0
     }
@@ -280,6 +267,22 @@ exports.getAllUnproofed = (req, res) => {
     .catch(error => {
       res.status(500).json({ message: error.message });
     });
+  }
+  else if(proofedValue == 1){
+    Product.findAll({
+    where: {
+      proofed: 1
+    }
+  })
+    .then(products => {
+      res.status(200).json(products);
+    })
+    .catch(error => {
+      res.status(500).json({ message: error.message });
+    });
+  }
+
+  
 };
 
 // Einzelnes Produkt freigeben
@@ -288,6 +291,26 @@ exports.releaseProduct = (req, res) => {
 
   Product.update(
     { proofed: 1 },
+    { where: { id: productId } }
+  )
+    .then(num => {
+      if (num[0] === 1) {
+        res.json({ message: "Product released successfully." });
+      } else {
+        res.status(404).json({ message: "Product not found." });
+      }
+    })
+    .catch(error => {
+      res.status(500).json({ message: error.message });
+    });
+};
+
+// Einzelnes Produkt sperren
+exports.lockProduct = (req, res) => {
+  const productId = req.body.productId;
+
+  Product.update(
+    { proofed: 0 },
     { where: { id: productId } }
   )
     .then(num => {
@@ -322,4 +345,22 @@ exports.releaseAllProducts = (req, res) => {
     });
 };
 
+// Alle Produkte sperren
+exports.lockAllProducts = (req, res) => {
+  const products = req.body.products;
 
+  const updatePromises = products.map(product => {
+    return Product.update(
+      { proofed: 0 },
+      { where: { id: product.id } }
+    );
+  });
+
+  Promise.all(updatePromises)
+    .then(() => {
+      res.status(200).json({ message: "All products released successfully." });
+    })
+    .catch(error => {
+      res.status(500).json({ message: error.message });
+    });
+};

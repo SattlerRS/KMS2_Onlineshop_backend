@@ -50,8 +50,6 @@ exports.addRatingForProduct = (req, res) => {
       // Berechne den Durchschnitt
       const averageRating = Math.round(totalRating / ratings.length);
 
-      console.log(averageRating);
-      console.log(productid);
       // Produktrating updaten
       Product.update(
         { rating: averageRating },
@@ -61,17 +59,14 @@ exports.addRatingForProduct = (req, res) => {
           res.status(200).send({ averageRating });
         })
         .catch((error) => {
-          console.log(error);
-          res.status(500).send("Es ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.");
+          res.status(500).send("An error has occurred. Please try again.");
         });
     })
     .catch((error) => {
-      console.log(error);
-      res.status(500).send("Es ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.");
+      res.status(500).send("An error has occurred. Please try again.");
     });
     })
     .catch((error) => {
-      console.log(error);
-      res.status(500).send("Es ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.");
+      res.status(500).send("An error has occurred. Please try again.");
     });
 };

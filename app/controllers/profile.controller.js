@@ -2,8 +2,7 @@ const db = require('../models');
 const Sellerdetails = db.sellerdetails;
 const Userdetails = db.userdetails;
 const User = db.user;
-const fs = require('fs');
-const path = require('path');
+
 
 // Prodildaten für Verkäufer abrufen
 exports.getProfileForSeller = (req, res) => {
@@ -42,7 +41,6 @@ exports.getProfileForSeller = (req, res) => {
       res.status(500).json({ message: 'Internal server error' });
     });
 };
-
 
 // Prodildaten für User abrufen
 exports.getProfileForUser = (req, res) => {
@@ -94,8 +92,6 @@ exports.updateSellerProfile = (req, res) => {
 
 // Profildaten für User updaten
 exports.updateUserProfile = (req, res) => {
-  console.log("Test");
-  
   const userData = req.body;
 
   Userdetails.update(userData, {
@@ -114,8 +110,8 @@ exports.updateUserProfile = (req, res) => {
     });
 }
   
-  // Profildaten mit Image für User updaten
-  exports.updateUserProfileWithImage = (req, res) => {
+// Profildaten mit Image für User updaten
+exports.updateUserProfileWithImage = (req, res) => {
     const userData = JSON.parse(req.body.userData);
     const imgFile = req.file; // Annahme: Das Bild wird als "image" im FormData-Objekt übertragen
     const userId = userData.userid;

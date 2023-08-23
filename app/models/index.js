@@ -1,5 +1,4 @@
 const config = require("../config/db.config.js");
-
 const Sequelize = require("sequelize");
 const sequelize = new Sequelize(
   config.DB,
@@ -22,6 +21,7 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
+// Models importieren
 db.user = require("../models/user.model.js")(sequelize, Sequelize);
 db.role = require("../models/role.model.js")(sequelize, Sequelize);
 db.product = require("../models/product.model.js")(sequelize, Sequelize);
@@ -32,10 +32,13 @@ db.order = require("../models/order.model.js")(sequelize, Sequelize);
 db.orderdetails = require("../models/order_details.model.js")(sequelize, Sequelize);
 db.rating = require("../models/rating.model.js")(sequelize, Sequelize);
 db.watchlist = require("../models/watchlist.model.js")(sequelize, Sequelize);
+db.passwordResetToken = require("../models/passwordResetToken.model.js")(sequelize, Sequelize);
 
+// Fremdschlüsselverbindeungen der DB
 db.role.belongsToMany(db.user, {
   through: "user_roles"
 });
+
 db.user.belongsToMany(db.role, {
   through: "user_roles"
 });
@@ -68,7 +71,7 @@ db.watchlist.belongsTo(db.product, {
   foreignKey: 'productid'
 }); 
 
-
+// Rollen für die DB
 db.ROLES = ["user", "admin", "moderator"];
 
 module.exports = db;

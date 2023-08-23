@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Newsletter</title>
+</head>
+<body>
+  <h1>Hier finden sie die neuesten Produkte bei ToolsShopping!</h1>
+  <ul>
+    {{#each products}}
+      <div class="card mt-5">
+        <div class="d-flex">
+          <div>
+            <img style="width: 150px;" src="{{ image }}" alt="{{ title }}">
+          </div>
+          <div class="ml-4">
+            <h3>{{ title }}</h3>
+            <p>{{ description }}</p>
+            <p>Preis: {{ price }} €</p>
+          </div>
+        </div>
+      </div>
+    {{/each}}
+  </ul>
+</body>
+</html>

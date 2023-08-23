@@ -1,25 +1,13 @@
-const stripe = require('stripe')("sk_test_51NQSMoAYAs8K8FsBKQjhd0IGmAjHsS9PGaoubnufXU7JzkfDCk2q3ussEjVZxxwPeWNOSYUwuupshn0aeee6YfdM00GXNFm2Xs");
+const paypalController = require("../controllers/paypal.controller");
+const stripeController = require("../controllers/stripe.controller");
 const token = require("../middleware/authJwt");
 
 module.exports = function (app) {
-   app.post('/checkout',token.verifyToken, async (req, res) => {
-  try {
-    const { token, amount} = req.body;
-    const customer = await stripe.customers.create({
-      email: token.email,
-      source: token.id,
-    });
-
-    const charge = await stripe.charges.create({
-      amount: amount*100,
-      description: "Test Purchase",
-      currency: "EUR",
-      customer: customer.id,
-    });
-
-    res.json({ data: "success" });
-  } catch (error) {
-    res.json({ data: "failure" });
-  }
-});
+  
+  // Stripe
+  app.post('/checkout', token.verifyToken, stripeController.StripePayment);
+  
+  // Paypal
+  app.post('/paypal/proof', token.verifyToken, paypalController.PaypalProofPayment);
+  app.post('/paypal/execute',token.verifyToken, paypalController.PaypalExecutePayment); 
 }

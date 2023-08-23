@@ -2,8 +2,6 @@ const db = require('../models');
 const Watchlist = db.watchlist;
 const Product = db.product;
 
-
-
 // Watchlist für User abrufen
 exports.getWatchlistForUser = (req, res) => {
   const userId = req.params.userId;
@@ -20,8 +18,7 @@ exports.getWatchlistForUser = (req, res) => {
     res.json(watchlistItems);
   })
   .catch(error => {
-    console.error('Fehler beim Abrufen der Watchlist:', error);
-    res.status(500).send('Fehler beim Abrufen der Watchlist');
+    res.status(500).send('Error getting watchlist');
   });
 };
 
@@ -34,11 +31,10 @@ exports.addProductToWatchlist = (req, res) => {
     productid: productId
   })
   .then(watchlistItem => {
-    res.json({ message: 'Produkt zur Watchlist hinzugefügt', watchlistItem });
+    res.json({ message: 'Product added to watchlist', watchlistItem });
   })
   .catch(error => {
-    console.error('Fehler beim Hinzufügen des Produkts zur Watchlist:', error);
-    res.status(500).send('Fehler beim Hinzufügen des Produkts zur Watchlist');
+    res.status(500).send('Error adding product to watchlist');
   });
 }
 
@@ -53,13 +49,12 @@ exports.deleteWatchlistEntry = (req, res) => {
     })
     .then(deletedCount => {
         if (deletedCount === 0) {
-        return res.status(404).json({ error: 'Eintrag in der Watchlist nicht gefunden' });
+        return res.status(404).json({ error: 'Entry in watchlist not found' });
         }
 
-        res.status(200).json({ message: 'Eintrag in der Watchlist erfolgreich gelöscht' });
+        res.status(200).json({ message: 'Entry in the watch list successfully deleted' });
     })
     .catch(error => {
-        console.error('Fehler beim Löschen des Watchlist-Eintrags:', error);
-        res.status(500).json({ error: 'Fehler beim Löschen des Watchlist-Eintrags' });
+        res.status(500).json({ error: 'Error deleting watchlist entry' });
     });
 }

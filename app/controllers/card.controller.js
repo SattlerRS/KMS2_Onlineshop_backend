@@ -41,12 +41,14 @@ exports.addToCard = (req, res) => {
             res.status(500).send({ message: "Failed to update product quantity in card." });
           });
       } else {
-        // Wenn die productid nicht in der Karte vorhanden ist, einen neuen Eintrag erstellen
+        
+        // Wenn die productid nicht im Warenkorb vorhanden ist, einen neuen Eintrag erstellen
         Card.create({
           userid: userId,
           productid: productId,
           amount: parseInt(quantity)
         })
+          // Produktmenge im Produktmodell reduzieren
           Product.findByPk(productId)
               .then((product) => {
                 const updatedQuantity = product.productamount - parseInt(quantity);
@@ -73,30 +75,31 @@ exports.addToCard = (req, res) => {
 
 // Warenkorb für User abfragen, nur Card Tabelle
 exports.getCardForUser = (req, res) => {
-     const userId = req.query.userId; // Hole die userId aus der Query-Parameter
-  // Suche nach der Karte des Benutzers anhand der userId
+  const userId = req.query.userId; // Hole die userId aus dem Query-Parameter
+  
+  // Suche nach dem Warenkorbeintrag des Benutzers anhand der userId
   Card.findAll({ where: { userid: userId } })
     .then((card) => {
       if (card) {
-        // Karte gefunden, sende sie als Antwort
+        // Warenkorb gefunden, sende sie als Antwort
         res.status(200).json(card);
       } else {
-        // Karte nicht gefunden
-        res.status(404).json({ message: "Karte nicht gefunden" });
+        // Warenkorb nicht gefunden
+        res.status(404).json({ message: "Card not found" });
       }
     })
     .catch((error) => {
-      // Fehler beim Abrufen der Karte
-      res.status(500).json({ message: "Fehler beim Abrufen der Karte", error: error });
+      // Fehler beim Abrufen des Warenkorbs
+      res.status(500).json({ message: "Fail to load Card", error: error });
     });
 }
 
-// Warenkorb für User abfragen, Card und Product Tabelle
+// Warenkorb für User abfragen, Card und Produkt Tabelle
 exports.getProductsFromCard = (req, res) => {
   const { userId } = req.query;
   Card.findAll({
     where: { userId },
-    include: Product // Inkludiere das Product-Modell
+    include: Product // Inkludiert das Product-Modell
   })
     .then((cards) => {
       res.send({ cards });
@@ -108,26 +111,17 @@ exports.getProductsFromCard = (req, res) => {
 };
 
 // Produkt aus Warenkorb entfernen
-
 exports.delProductFromCard = (req, res) => {
   const cardId = req.query.cardId;
   const productId = req.query.productId;
   const cardAmount = req.query.cardAmount;
-
-  console.log(cardAmount);
-  console.log(productId);
   
   // Aktualisiere die Produktmenge
   Product.update(
-    {
-      productamount: db.sequelize.literal(`productamount + ${cardAmount}`),
-    },
-    {
-      where: { id: productId },
-    }
+    {productamount: db.sequelize.literal(`productamount + ${cardAmount}`),},
+    {where: { id: productId },}
   )
     .then((numUpdated) => {
-      console.log("hier");
       if (numUpdated[0] === 0) {
         // Das Produkt wurde nicht gefunden
         throw new Error("Produkt nicht gefunden.");
@@ -140,14 +134,14 @@ exports.delProductFromCard = (req, res) => {
     })
     .then((numDeleted) => {
       if (numDeleted === 0) {
-        // Der Karteintrag wurde nicht gefunden
-        throw new Error("Karteintrag nicht gefunden.");
+        // Der Warenkorbeintrag wurde nicht gefunden
+        throw new Error("Card entry nor found");
       }
 
-      res.status(204).send(); // Erfolgreiche Löschung
+      res.status(204).send();
     })
     .catch((err) => {
-      res.status(500).send({ message: err.message || "Interner Serverfehler." });
+      res.status(500).send({ message: err.message || "Internal Server Error." });
     });
 };
 
@@ -163,8 +157,8 @@ exports.changeAmountInCard = async (req, res) => {
     // Aktualisiere das Product mit der entsprechenden productId
     await Product.update({ productamount: newProductAmount }, { where: { id: productId } });
 
-    res.status(200).send({ message: 'Aktualisierung erfolgreich.' });
+    res.status(200).send({ message: 'Update successful.' });
   } catch (error) {
-    res.status(500).send({ message: 'Interner Serverfehler.' });
+    res.status(500).send({ message: 'Internal Server Error.' });
   }
 };

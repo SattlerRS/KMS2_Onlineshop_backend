@@ -34,14 +34,15 @@ exports.addOrdersAndDeleteCard = (req, res) => {
                 status: 'bestellt'
             })
             .then(orderDetail => {
-        // Menge zum Feld "sold" im Produktmodell hinzufügen
-        return Product.findByPk(cardItem.productid)
-          .then(foundProduct => {
-            foundProduct.sold += cardItem.amount; // Menge addieren
-            return foundProduct.save(); // Produkt speichern
-          });
-      });
-    });
+                
+                // Menge zum Feld "sold" im Produktmodell hinzufügen
+                return Product.findByPk(cardItem.productid)
+                .then(foundProduct => {
+                    foundProduct.sold += cardItem.amount; // Menge addieren
+                    return foundProduct.save(); // Produkt speichern
+                });
+            });
+        });
 
         Promise.all(orderDetailsPromises)
             .then(() => {
@@ -52,20 +53,20 @@ exports.addOrdersAndDeleteCard = (req, res) => {
             }
             })
             .then(() => {
-            res.json({ message: "Änderungen waren erfolgreich!", order: order.id});
+            res.json({ message: "Changes were successful!", order: order.id});
             })
             .catch(error => {
             // Fehler beim Löschen der Karten behandeln
-            res.status(500).send('Fehler beim Löschen der Karten');
+            res.status(500).send('Error deleting card');
             });
         })
         .catch(error => {
             // Fehler beim Erstellen der Orderdetails behandeln
-            res.status(500).send('Fehler beim Ändern');
+            res.status(500).send('Error changing');
         });
     })
     .catch(error => {
         // Fehler beim Erstellen der Order behandeln
-        res.status(500).send('Fehler beim Ändern');
+        res.status(500).send('Error changing');
     });
 };

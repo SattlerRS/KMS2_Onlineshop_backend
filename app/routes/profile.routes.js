@@ -3,7 +3,7 @@ const multer = require('multer');
 const express = require('express');
 const token = require("../middleware/authJwt");
 
-// File Upload
+// File Upload mit Multer
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, 'profilImgs/');
@@ -13,7 +13,8 @@ const storage = multer.diskStorage({
   }
 });
 const upload = multer({ storage: storage });
-// Route
+
+// Routen
 module.exports = function (app) {
   app.get('/api/profile/getProfileForSeller/:sellerId',token.verifyToken, profileController.getProfileForSeller);
   app.get('/api/profile/getProfileForUser/:userId',token.verifyToken, profileController.getProfileForUser);

@@ -28,5 +28,10 @@ module.exports = function(app) {
     controller.signup_as_seller
   );
 
+  app.post("/api/auth/emailVerification", controller.verifyEmail);
   app.post("/api/auth/signin", controller.signin);
+  app.post('/api/auth/resetPassword', controller.resetPassword);
+  app.post('/api/auth/resetPasswordNewPasswort', controller.resetPasswordToNewPassword);
+  app.get('/api/auth/checkResetTokenValidity/:token', controller.checkResetTokenValidity);
+  app.post('/api/auth/changePasswordForUser', controller.changePassword);
 };

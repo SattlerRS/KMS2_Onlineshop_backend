@@ -2,6 +2,7 @@ const db = require("../models");
 const ROLES = db.ROLES;
 const User = db.user;
 
+// Prüft ob der Username oder die Email bereits existiert
 checkDuplicateUsernameOrEmail = (req, res, next) => {
   // Username
   User.findOne({
@@ -34,6 +35,7 @@ checkDuplicateUsernameOrEmail = (req, res, next) => {
   });
 };
 
+// Prüft ob die zugewiesene Rolle bereits existiert
 checkRolesExisted = (req, res, next) => {
   if (req.body.roles) {
     for (let i = 0; i < req.body.roles.length; i++) {
