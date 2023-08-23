@@ -3,8 +3,8 @@ const paypal = require('paypal-rest-sdk');
 // Paypal Konfiguration
 paypal.configure({
   mode: 'sandbox', // sandbox für Testumgebung
-  client_id: 'AUcKon4cwaiMFVH544rNqhFPvvl0esHmf2kSlKfQYthDg7gNW3R8-2O02oD3_Cg5OSbA1sHOO0xtD9tg',
-  client_secret: 'ENUA8kJ_J4aFS1S2maemmhr8XqH4P-8H4xMYezL3eG55ERRtyJZy6h_INjVDqGpsdVELMLJZqvIOftr8'
+  client_id: '',
+  client_secret: ''
 });
 
 // Paypal Bezahlung überprüfen
