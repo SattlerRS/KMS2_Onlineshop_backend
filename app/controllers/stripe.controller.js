@@ -1,4 +1,4 @@
-const stripe = require('stripe')("sk_test_51NQSMoAYAs8K8FsBKQjhd0IGmAjHsS9PGaoubnufXU7JzkfDCk2q3ussEjVZxxwPeWNOSYUwuupshn0aeee6YfdM00GXNFm2Xs");
+const stripe = require('stripe')("");
 
 
 // Bezahlung durchführen üer Stripe
